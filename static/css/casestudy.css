@@ -1,3 +1,4 @@
+<<<<<<< HEAD:static/css/casestudy.css
 /* ── Two-upload layout ─────────────────────────────────────────────────────── */
 
 .upload-pair {
@@ -169,12 +170,64 @@
 
 /* ── Metric charts grid ────────────────────────────────────────────────────── */
 
+=======
+/* ── Casestudy-specific styles ── */
+
+.cs-badge {
+  background: #fff3bf;
+  color: #e67700;
+}
+
+.cs-legend-hint {
+  font-size: .82rem;
+  color: var(--muted);
+  background: var(--surface2);
+  border: 1px solid var(--border-lt);
+  border-radius: 8px;
+  padding: 9px 16px;
+  align-self: center;
+}
+
+/* ── Period info bar ── */
+.period-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 12px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border-lt);
+  border-radius: var(--radius);
+  font-size: .82rem;
+  color: var(--text-2);
+  box-shadow: var(--shadow-xs);
+}
+
+.period-bar-label {
+  font-weight: 700;
+  color: var(--primary);
+  margin-right: 4px;
+}
+
+.period-chip {
+  display: inline-block;
+  padding: 3px 10px;
+  background: var(--primary-lt);
+  color: var(--primary);
+  border-radius: 6px;
+  font-size: .75rem;
+  font-weight: 600;
+}
+
+/* ── Charts grid ── */
+>>>>>>> 3c972e0 (ページ追加):app/static/css/casestudy.css
 .cs-charts-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 20px;
 }
 
+<<<<<<< HEAD:static/css/casestudy.css
 .chart-card .chart-wrap { height: 280px; position: relative; }
 
 /* "data unavailable" card */
@@ -263,4 +316,32 @@
   .upload-pair { grid-template-columns: 1fr; }
   .vs-col { padding-top: 0; }
   .cs-charts-grid { grid-template-columns: 1fr; }
+=======
+/* Chart card (inherits .chart-card from style.css, override height) */
+.cs-charts-grid .chart-card .chart-wrap {
+  height: 300px;
+}
+
+/* Stacked-bar card takes full width */
+.cs-charts-grid .chart-card.full-width {
+  grid-column: 1 / -1;
+}
+
+.cs-charts-grid .chart-card.full-width .chart-wrap {
+  height: 280px;
+}
+
+/* Legend at bottom */
+.chart-legend-note {
+  font-size: .73rem;
+  color: var(--muted);
+  text-align: center;
+  margin-top: 6px;
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .cs-charts-grid { grid-template-columns: 1fr; }
+  .cs-charts-grid .chart-card.full-width { grid-column: auto; }
+>>>>>>> 3c972e0 (ページ追加):app/static/css/casestudy.css
 }

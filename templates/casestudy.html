@@ -7,7 +7,10 @@
   <link rel="stylesheet" href="/static/css/style.css" />
   <link rel="stylesheet" href="/static/css/casestudy.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<<<<<<< HEAD:templates/casestudy.html
   <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
+=======
+>>>>>>> 3c972e0 (ページ追加):app/templates/casestudy.html
 </head>
 <body>
 
@@ -18,10 +21,19 @@
       <div class="brand-icon">📈</div>
       <div>
         <div class="brand-title">ケーススタディ 通年変化可視化</div>
+<<<<<<< HEAD:templates/casestudy.html
         <div class="brand-sub">Year-over-Year Comparison</div>
       </div>
     </div>
     <button class="btn btn-outline" id="sampleBtn">⬇ サンプルCSVをダウンロード</button>
+=======
+        <div class="brand-sub">Annual Trend Visualization</div>
+      </div>
+    </div>
+    <button class="btn btn-outline" id="sampleBtn">
+      ⬇ サンプルCSVをダウンロード
+    </button>
+>>>>>>> 3c972e0 (ページ追加):app/templates/casestudy.html
   </div>
 </header>
 
@@ -36,6 +48,7 @@
 <!-- ── MAIN ── -->
 <main class="main">
 
+<<<<<<< HEAD:templates/casestudy.html
   <!-- ── UPLOAD ── -->
   <section class="card upload-card">
     <div class="section-head">
@@ -117,11 +130,55 @@
   </section>
 
   <!-- ── RESULTS ── -->
+=======
+  <!-- UPLOAD -->
+  <section class="card upload-card">
+    <div class="section-head">
+      <span class="step-badge">Step 1</span>
+      <h2 class="section-title">CSVファイルをアップロード</h2>
+      <p class="section-desc">
+        <strong>月</strong>・広告種別・広告媒体・Imp数・クリック数・CV数・課金・広告費 の列を含む通年データをアップロードしてください。
+      </p>
+    </div>
+
+    <div class="drop-zone" id="dropZone">
+      <input type="file" id="fileInput" accept=".csv" />
+      <div class="drop-icon">📂</div>
+      <p class="drop-title">ここにCSVをドラッグ＆ドロップ</p>
+      <p class="drop-hint">または <strong>クリックしてファイルを選択</strong></p>
+    </div>
+
+    <div class="file-info" id="fileInfo">
+      <div class="file-info-icon">✅</div>
+      <div class="file-info-body">
+        <div class="file-info-name" id="fileName">—</div>
+        <div class="file-info-meta" id="fileMeta">—</div>
+      </div>
+      <button class="file-clear" id="fileClearBtn" title="ファイルを削除">✕</button>
+    </div>
+
+    <div class="alert alert-error" id="errorAlert">
+      <span>⚠</span>
+      <span id="errorText">—</span>
+    </div>
+
+    <div class="upload-actions">
+      <button class="btn btn-primary" id="analyzeBtn" disabled>
+        <span id="btnIcon">▶</span>
+        <span id="btnLabel">可視化開始</span>
+      </button>
+      <span class="upload-hint" id="uploadHint">CSVをアップロードすると可視化できます</span>
+    </div>
+  </section>
+
+  <!-- RESULTS -->
+>>>>>>> 3c972e0 (ページ追加):app/templates/casestudy.html
   <section id="resultsSection" class="hidden">
 
     <!-- Top bar -->
     <div class="results-topbar">
       <div>
+<<<<<<< HEAD:templates/casestudy.html
         <span class="step-badge">Results</span>
         <h2 class="section-title" style="margin-top:6px;">年度比較分析結果</h2>
       </div>
@@ -183,11 +240,35 @@
         </table>
       </div>
     </div>
+=======
+        <span class="step-badge cs-badge">Results</span>
+        <h2 class="section-title" style="margin-top:6px;">通年分析結果</h2>
+      </div>
+      <div class="cs-legend-hint">
+        💡 グラフ凡例をクリックすると広告媒体の表示・非表示を切り替えられます
+      </div>
+    </div>
+
+    <!-- ANNUAL SUMMARY CARDS -->
+    <div class="summary-grid" id="summaryCards"></div>
+
+    <!-- PERIOD INFO BAR -->
+    <div class="period-bar" id="periodBar"></div>
+
+    <!-- CHARTS 2×3 grid -->
+    <div class="cs-charts-grid" id="chartsGrid"></div>
+>>>>>>> 3c972e0 (ページ追加):app/templates/casestudy.html
 
   </section>
 </main>
 
+<<<<<<< HEAD:templates/casestudy.html
 <div class="toast" id="toast"></div>
+=======
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+>>>>>>> 3c972e0 (ページ追加):app/templates/casestudy.html
 <script src="/static/js/casestudy.js"></script>
 </body>
 </html>

@@ -1,5 +1,6 @@
 'use strict';
 
+<<<<<<< HEAD:static/js/casestudy.js
 // ── Colors ────────────────────────────────────────────────────────────────────
 const T_COLOR = '#3b5bdb'; // target  (blue)
 const C_COLOR = '#d97706'; // compare (orange)
@@ -25,10 +26,33 @@ const compareName  = document.getElementById('compareName');
 const compareMeta  = document.getElementById('compareMeta');
 const compareClear = document.getElementById('compareClear');
 
+=======
+// ── Palette (same as main.js for consistency) ─────────────────────────────────
+const PALETTE = [
+  '#3b5bdb','#e64980','#0ca678','#f59f00',
+  '#7048e8','#1971c2','#d9480f','#2b8a3e',
+];
+
+// ── State ─────────────────────────────────────────────────────────────────────
+let currentFile    = null;
+let chartInstances = {};
+let apiResult      = null;
+
+// ── DOM refs ──────────────────────────────────────────────────────────────────
+const dropZone       = document.getElementById('dropZone');
+const fileInput      = document.getElementById('fileInput');
+const fileInfoEl     = document.getElementById('fileInfo');
+const fileNameEl     = document.getElementById('fileName');
+const fileMetaEl     = document.getElementById('fileMeta');
+const fileClearBtn   = document.getElementById('fileClearBtn');
+const errorAlert     = document.getElementById('errorAlert');
+const errorText      = document.getElementById('errorText');
+>>>>>>> 3c972e0 (ページ追加):app/static/js/casestudy.js
 const analyzeBtn     = document.getElementById('analyzeBtn');
 const btnIcon        = document.getElementById('btnIcon');
 const btnLabel       = document.getElementById('btnLabel');
 const uploadHint     = document.getElementById('uploadHint');
+<<<<<<< HEAD:static/js/casestudy.js
 const errorAlert     = document.getElementById('errorAlert');
 const errorText      = document.getElementById('errorText');
 const resultsSection = document.getElementById('resultsSection');
@@ -94,17 +118,74 @@ function updateBtn() {
   uploadHint.textContent = ready
     ? '2つのCSVが揃いました。比較分析を開始してください'
     : '2つのCSVをアップロードすると比較分析できます';
+=======
+const resultsSection = document.getElementById('resultsSection');
+const summaryCards   = document.getElementById('summaryCards');
+const periodBar      = document.getElementById('periodBar');
+const chartsGrid     = document.getElementById('chartsGrid');
+
+// ── Drag & Drop ───────────────────────────────────────────────────────────────
+dropZone.addEventListener('dragover', e => {
+  e.preventDefault();
+  dropZone.classList.add('drag-over');
+});
+dropZone.addEventListener('dragleave', e => {
+  if (!dropZone.contains(e.relatedTarget)) dropZone.classList.remove('drag-over');
+});
+dropZone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropZone.classList.remove('drag-over');
+  if (e.dataTransfer.files[0]) setFile(e.dataTransfer.files[0]);
+});
+fileInput.addEventListener('change', e => {
+  if (e.target.files[0]) setFile(e.target.files[0]);
+});
+
+function setFile(f) {
+  hideError();
+  if (!f.name.toLowerCase().endsWith('.csv')) {
+    showError('CSVファイル(.csv)を選択してください');
+    return;
+  }
+  currentFile = f;
+  fileNameEl.textContent = f.name;
+  fileMetaEl.textContent = `${(f.size / 1024).toFixed(1)} KB`;
+  fileInfoEl.classList.add('show');
+  dropZone.classList.add('has-file');
+  analyzeBtn.disabled = false;
+  uploadHint.textContent = 'ファイルを読み込みました。可視化を開始してください';
+}
+
+fileClearBtn.addEventListener('click', clearFile);
+function clearFile() {
+  currentFile = null;
+  apiResult   = null;
+  fileInfoEl.classList.remove('show');
+  dropZone.classList.remove('has-file');
+  hideError();
+  analyzeBtn.disabled  = true;
+  btnLabel.textContent = '可視化開始';
+  btnIcon.textContent  = '▶';
+  uploadHint.textContent = 'CSVをアップロードすると可視化できます';
+  resultsSection.classList.add('hidden');
+  fileInput.value = '';
+>>>>>>> 3c972e0 (ページ追加):app/static/js/casestudy.js
 }
 
 // ── Analyze ───────────────────────────────────────────────────────────────────
 analyzeBtn.addEventListener('click', async () => {
+<<<<<<< HEAD:static/js/casestudy.js
   if (!targetFile || !compareFile) return;
+=======
+  if (!currentFile) return;
+>>>>>>> 3c972e0 (ページ追加):app/static/js/casestudy.js
   analyzeBtn.disabled  = true;
   btnIcon.innerHTML    = '<span class="spinner"></span>';
   btnLabel.textContent = '処理中...';
   hideError();
 
   const fd = new FormData();
+<<<<<<< HEAD:static/js/casestudy.js
   fd.append('target',  targetFile);
   fd.append('compare', compareFile);
 
@@ -119,11 +200,29 @@ analyzeBtn.addEventListener('click', async () => {
     resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
     uploadHint.textContent =
       `比較完了 — 対象: ${json.rowCount.target}件 / 比較: ${json.rowCount.compare}件`;
+=======
+  fd.append('file', currentFile);
+
+  try {
+    const res  = await fetch('/api/casestudy', { method: 'POST', body: fd });
+    const json = await res.json();
+    if (!res.ok) { showError(json.error || 'サーバーエラーが発生しました'); return; }
+
+    apiResult = json;
+    renderSummary(json.summary);
+    renderPeriodBar(json.periods, json.ads);
+    renderCharts(json);
+
+    resultsSection.classList.remove('hidden');
+    resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    uploadHint.textContent = `可視化完了 — ${json.rowCount} 件 / ${json.periods.length} 期間`;
+>>>>>>> 3c972e0 (ページ追加):app/static/js/casestudy.js
   } catch (err) {
     showError('通信エラーが発生しました: ' + err.message);
   } finally {
     analyzeBtn.disabled  = false;
     btnIcon.textContent  = '▶';
+<<<<<<< HEAD:static/js/casestudy.js
     btnLabel.textContent = '再分析';
   }
 });
@@ -725,21 +824,279 @@ document.getElementById('sampleBtn').addEventListener('click', () => {
   toast('📄 サンプルCSVをダウンロードしました');
 });
 
+=======
+    btnLabel.textContent = '再可視化';
+  }
+});
+
+// ── Summary cards ─────────────────────────────────────────────────────────────
+function renderSummary(s) {
+  const cards = [
+    { label: '年間広告費合計',         value: fmtYen(s.totalCost),   unit: '通年累計' },
+    { label: '年間インプレッション',    value: fmtNum(s.totalImp),    unit: 'imp 通年' },
+    { label: '年間クリック数',          value: fmtNum(s.totalClicks), unit: 'clicks 通年' },
+    { label: '年間CV数',               value: fmtNum(s.totalCV),     unit: 'CV 通年' },
+    { label: '年間平均CPC',            value: s.avgCPC  != null ? fmtYen(s.avgCPC)   : 'N/A', unit: '全期間平均' },
+    { label: '年間平均CPM',            value: s.avgCPM  != null ? fmtYen(s.avgCPM)   : 'N/A', unit: '全期間平均' },
+    { label: '年間平均CPA',            value: s.avgCPA  != null ? fmtYen(s.avgCPA)   : 'N/A', unit: '全期間平均' },
+    { label: '年間平均CTR',            value: s.avgCTR  != null ? `${s.avgCTR}%`     : 'N/A', unit: '全期間平均' },
+    { label: '年間平均CVR',            value: s.avgCVR  != null ? `${s.avgCVR}%`     : 'N/A', unit: '全期間平均' },
+  ];
+  summaryCards.innerHTML = cards.map(c => `
+    <div class="scard">
+      <div class="scard-label">${c.label}</div>
+      <div class="scard-value">${esc(c.value)}</div>
+      <div class="scard-unit">${c.unit}</div>
+    </div>
+  `).join('');
+}
+
+// ── Period bar ────────────────────────────────────────────────────────────────
+function renderPeriodBar(periods, ads) {
+  const chips = periods.map(p => `<span class="period-chip">${esc(p)}</span>`).join('');
+  periodBar.innerHTML = `
+    <span class="period-bar-label">集計期間</span>
+    ${chips}
+    <span style="margin-left:12px;color:var(--muted);">|</span>
+    <span style="margin-left:12px;"><strong>${ads.length}</strong> 広告媒体</span>
+    <span style="margin-left:12px;"><strong>${periods.length}</strong> 期間</span>
+  `;
+}
+
+// ── Chart definitions ─────────────────────────────────────────────────────────
+const CHART_DEFS = [
+  {
+    key: 'cost', label: '月次広告費推移', unit: '円', type: 'bar',
+    stacked: true, fullWidth: true, higherBetter: null,
+    desc: '各広告媒体の月次予算配分', fmt: fmtYen,
+    yFmt: v => fmtYenShort(v),
+  },
+  {
+    key: 'imp',  label: '月次インプレッション推移', unit: 'imp', type: 'line',
+    stacked: false, fullWidth: false, higherBetter: true,
+    desc: 'リーチ数の推移', fmt: fmtNum,
+    yFmt: v => fmtNumShort(v),
+  },
+  {
+    key: 'CPC',  label: '月次CPC推移（クリック単価）', unit: '円', type: 'line',
+    stacked: false, fullWidth: false, higherBetter: false,
+    desc: '1クリックあたりコストの推移', fmt: fmtYen,
+    yFmt: v => fmtYen(v),
+  },
+  {
+    key: 'CTR',  label: '月次CTR推移（クリック率）', unit: '%', type: 'line',
+    stacked: false, fullWidth: false, higherBetter: true,
+    desc: 'クリックスルーレートの推移', fmt: v => `${v}%`,
+    yFmt: v => `${v}%`,
+  },
+  {
+    key: 'CVR',  label: '月次CVR推移（転換率）', unit: '%', type: 'line',
+    stacked: false, fullWidth: false, higherBetter: true,
+    desc: 'コンバージョン率の推移', fmt: v => `${v}%`,
+    yFmt: v => `${v}%`,
+  },
+  {
+    key: 'CPA',  label: '月次CPA推移（獲得単価）', unit: '円', type: 'line',
+    stacked: false, fullWidth: false, higherBetter: false,
+    desc: '1CV獲得コストの推移', fmt: fmtYen,
+    yFmt: v => fmtYen(v),
+  },
+];
+
+// ── Render all charts ─────────────────────────────────────────────────────────
+function renderCharts({ periods, ads, series }) {
+  Object.values(chartInstances).forEach(c => c.destroy());
+  chartInstances = {};
+  chartsGrid.innerHTML = '';
+
+  CHART_DEFS.forEach(def => {
+    const cardId   = `card_${def.key}`;
+    const canvasId = `chart_${def.key}`;
+    const badgeHtml = def.higherBetter === true
+      ? `<span class="chart-badge higher">高いほど良い</span>`
+      : def.higherBetter === false
+        ? `<span class="chart-badge lower">低いほど良い</span>`
+        : '';
+
+    chartsGrid.insertAdjacentHTML('beforeend', `
+      <div class="chart-card${def.fullWidth ? ' full-width' : ''}" id="${cardId}">
+        <div class="chart-head">
+          <div>
+            <div class="chart-title">${def.label}</div>
+            <div class="chart-sub">${def.desc}</div>
+          </div>
+          ${badgeHtml}
+        </div>
+        <div class="chart-wrap"><canvas id="${canvasId}"></canvas></div>
+        <p class="chart-legend-note">凡例をクリックして表示・非表示を切り替え</p>
+      </div>
+    `);
+
+    const datasets = ads.map((ad, i) => {
+      const color = PALETTE[i % PALETTE.length];
+      const data  = series[def.key][ad];
+
+      if (def.type === 'bar') {
+        return {
+          label: ad, data,
+          backgroundColor: color + 'cc',
+          borderColor: color,
+          borderWidth: 1,
+          borderRadius: 3,
+        };
+      }
+      return {
+        label: ad, data,
+        borderColor: color,
+        backgroundColor: color + '18',
+        borderWidth: 2.5,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        pointBackgroundColor: color,
+        tension: 0.35,
+        fill: false,
+        spanGaps: true,
+      };
+    });
+
+    const ctx = document.getElementById(canvasId).getContext('2d');
+    chartInstances[def.key] = new Chart(ctx, {
+      type: def.type,
+      data: { labels: periods, datasets },
+      options: buildChartOptions(def),
+    });
+  });
+}
+
+function buildChartOptions(def) {
+  return {
+    responsive: true,
+    maintainAspectRatio: false,
+    interaction: { mode: 'index', intersect: false },
+    plugins: {
+      legend: {
+        display: true,
+        position: 'bottom',
+        labels: {
+          color: '#495057',
+          font: { size: 10 },
+          padding: 12,
+          usePointStyle: true,
+          pointStyle: def.type === 'line' ? 'circle' : 'rect',
+        },
+      },
+      tooltip: {
+        backgroundColor: '#fff',
+        borderColor: '#dde1e7',
+        borderWidth: 1,
+        titleColor: '#1c2333',
+        bodyColor: '#495057',
+        padding: 12,
+        callbacks: {
+          label: ctx => {
+            const v = ctx.raw;
+            return ` ${ctx.dataset.label}: ${v == null ? 'N/A' : def.fmt(v)}`;
+          },
+        },
+      },
+    },
+    scales: {
+      x: {
+        stacked: def.stacked,
+        grid: { color: '#eaecef' },
+        ticks: { color: '#868e96', font: { size: 10 } },
+      },
+      y: {
+        stacked: def.stacked,
+        grid: { color: '#eaecef' },
+        beginAtZero: true,
+        ticks: {
+          color: '#868e96',
+          font: { size: 10 },
+          callback: v => def.yFmt(v),
+        },
+      },
+    },
+  };
+}
+
+// ── Sample CSV ────────────────────────────────────────────────────────────────
+document.getElementById('sampleBtn').addEventListener('click', () => {
+  const rows = buildSampleRows();
+  const header = '月,広告種別,広告媒体,Imp数,クリック数,CV数,課金,広告費';
+  const csv = '﻿' + header + '\n' + rows.join('\n');
+  downloadBlob(new Blob([csv], { type: 'text/csv;charset=utf-8;' }), 'sample_casestudy_annual.csv');
+  toast('📄 サンプルCSVをダウンロードしました');
+});
+
+function buildSampleRows() {
+  const ads = [
+    { type: 'ディスプレイ', media: 'Google',    billing: 'CPM課金', baseImp: 500000, baseCl: 2500,  baseCv: 50,  baseCost: 200000 },
+    { type: 'リスティング', media: 'Google',    billing: 'CPC課金', baseImp: 200000, baseCl: 8000,  baseCv: 120, baseCost: 400000 },
+    { type: 'SNS広告',     media: 'Facebook', billing: 'CPC課金', baseImp: 800000, baseCl: 4000,  baseCv: 30,  baseCost: 180000 },
+    { type: '動画広告',    media: 'YouTube',  billing: 'CPM課金', baseImp:1200000, baseCl: 6000,  baseCv: 80,  baseCost: 320000 },
+    { type: 'SNS広告',     media: 'Instagram', billing: 'CPC課金', baseImp: 600000, baseCl: 3000,  baseCv: 45,  baseCost: 150000 },
+  ];
+  // Seasonal multipliers (Jan–Dec)
+  const mult = [0.90, 0.95, 1.05, 1.00, 1.10, 1.05, 1.15, 1.20, 1.10, 1.15, 1.30, 1.50];
+  const months = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+
+  const rows = [];
+  months.forEach((m, mi) => {
+    ads.forEach(ad => {
+      const x = mult[mi];
+      rows.push([
+        m,
+        ad.type,
+        ad.media,
+        Math.round(ad.baseImp  * x),
+        Math.round(ad.baseCl   * x),
+        Math.round(ad.baseCv   * x),
+        ad.billing,
+        Math.round(ad.baseCost * x),
+      ].join(','));
+    });
+  });
+  return rows;
+}
+
+>>>>>>> 3c972e0 (ページ追加):app/static/js/casestudy.js
 // ── Utilities ─────────────────────────────────────────────────────────────────
 function fmtYen(v) {
   if (v == null) return 'N/A';
   return '¥' + Number(v).toLocaleString('ja-JP');
 }
+<<<<<<< HEAD:static/js/casestudy.js
 
+=======
+function fmtYenShort(v) {
+  if (v == null) return '';
+  if (v >= 1_000_000) return `¥${(v / 1_000_000).toFixed(1)}M`;
+  if (v >= 1_000)     return `¥${(v / 1_000).toFixed(0)}K`;
+  return `¥${v}`;
+}
+>>>>>>> 3c972e0 (ページ追加):app/static/js/casestudy.js
 function fmtNum(v) {
   if (v == null) return 'N/A';
   return Number(v).toLocaleString('ja-JP');
 }
+<<<<<<< HEAD:static/js/casestudy.js
 
 function esc(s) {
   return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
+=======
+function fmtNumShort(v) {
+  if (v == null) return '';
+  if (v >= 1_000_000) return `${(v / 1_000_000).toFixed(1)}M`;
+  if (v >= 1_000)     return `${(v / 1_000).toFixed(0)}K`;
+  return String(v);
+}
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+>>>>>>> 3c972e0 (ページ追加):app/static/js/casestudy.js
 function downloadBlob(blob, filename) {
   const url = URL.createObjectURL(blob);
   const a   = Object.assign(document.createElement('a'), { href: url, download: filename });
@@ -748,7 +1105,10 @@ function downloadBlob(blob, filename) {
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
+<<<<<<< HEAD:static/js/casestudy.js
 
+=======
+>>>>>>> 3c972e0 (ページ追加):app/static/js/casestudy.js
 function showError(msg) { errorText.textContent = msg; errorAlert.classList.add('show'); }
 function hideError()    { errorAlert.classList.remove('show'); }
 
