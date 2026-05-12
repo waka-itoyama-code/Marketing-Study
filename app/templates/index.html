@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>インターネット広告分析</title>
+  <link rel="stylesheet" href="/static/css/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header class="header">
+  <div class="header-inner">
+    <div class="header-brand">
+      <div class="brand-icon">📊</div>
+      <div>
+        <div class="brand-title">インターネット広告分析</div>
+        <div class="brand-sub">Ad Performance Analytics</div>
+      </div>
+    </div>
+    <button class="btn btn-outline" id="sampleBtn">
+      ⬇ サンプルCSVをダウンロード
+    </button>
+  </div>
+</header>
+
+<!-- ── MAIN ── -->
+<main class="main">
+
+  <!-- UPLOAD -->
+  <section class="card upload-card">
+    <div class="section-head">
+      <span class="step-badge">Step 1</span>
+      <h2 class="section-title">CSVファイルをアップロード</h2>
+      <p class="section-desc">
+        広告種別・広告媒体・Imp数・クリック数・CV数・課金・広告費 の列を含むCSVファイルをアップロードしてください。
+      </p>
+    </div>
+
+    <div class="drop-zone" id="dropZone">
+      <input type="file" id="fileInput" accept=".csv" />
+      <div class="drop-icon">📂</div>
+      <p class="drop-title">ここにCSVをドラッグ＆ドロップ</p>
+      <p class="drop-hint">または <strong>クリックしてファイルを選択</strong></p>
+    </div>
+
+    <div class="file-info" id="fileInfo">
+      <div class="file-info-icon">✅</div>
+      <div class="file-info-body">
+        <div class="file-info-name" id="fileName">—</div>
+        <div class="file-info-meta" id="fileMeta">—</div>
+      </div>
+      <button class="file-clear" id="fileClearBtn" title="ファイルを削除">✕</button>
+    </div>
+
+    <div class="alert alert-error" id="errorAlert">
+      <span>⚠</span>
+      <span id="errorText">—</span>
+    </div>
+
+    <div class="upload-actions">
+      <button class="btn btn-primary" id="analyzeBtn" disabled>
+        <span id="btnIcon">▶</span>
+        <span id="btnLabel">分析開始</span>
+      </button>
+      <span class="upload-hint" id="uploadHint">CSVをアップロードすると分析できます</span>
+    </div>
+  </section>
+
+  <!-- RESULTS (hidden until analysis) -->
+  <section id="resultsSection" class="hidden">
+
+    <div class="results-topbar">
+      <div>
+        <span class="step-badge">Results</span>
+        <h2 class="section-title" style="margin-top:6px;">分析結果</h2>
+      </div>
+      <button class="btn btn-outline" id="exportBtn">⬇ Excelで出力</button>
+    </div>
+
+    <!-- SUMMARY CARDS -->
+    <div class="summary-grid" id="summaryCards"></div>
+
+    <!-- TABLE -->
+    <div class="card table-card">
+      <div class="table-header">
+        <h3 class="table-title">広告別パフォーマンス詳細</h3>
+        <p class="table-desc">各セルの色は同データ内での相対ランクを示します（
+          <span class="legend good">●</span> 優良 &nbsp;
+          <span class="legend mid">●</span> 中位 &nbsp;
+          <span class="legend bad">●</span> 要改善
+        ）</p>
+      </div>
+      <div class="table-scroll">
+        <table id="resultsTable">
+          <thead>
+            <tr>
+              <th>広告種別</th>
+              <th>広告媒体</th>
+              <th>広告費</th>
+              <th>Imp数</th>
+              <th>クリック数</th>
+              <th>CV数</th>
+              <th>CPC <small>円</small></th>
+              <th>CPM <small>円</small></th>
+              <th>CPA <small>円</small></th>
+              <th>CTR <small>%</small></th>
+              <th>CVR <small>%</small></th>
+            </tr>
+          </thead>
+          <tbody id="resultsBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- CHARTS -->
+    <div class="chart-section-head">
+      <h3 class="chart-section-title">広告費降順による各指標の可視化</h3>
+      <p class="chart-section-desc">各グラフは該当指標の降順でソートされています</p>
+    </div>
+    <div class="charts-grid" id="chartsGrid"></div>
+
+  </section>
+</main>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script src="/static/js/main.js"></script>
+</body>
+</html>
