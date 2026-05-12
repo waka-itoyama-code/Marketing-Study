@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ケーススタディ 通年変化可視化</title>
+  <link rel="stylesheet" href="/static/css/style.css" />
+  <link rel="stylesheet" href="/static/css/casestudy.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header class="header">
+  <div class="header-inner">
+    <div class="header-brand">
+      <div class="brand-icon">📈</div>
+      <div>
+        <div class="brand-title">ケーススタディ 通年変化可視化</div>
+        <div class="brand-sub">Year-over-Year Comparison</div>
+      </div>
+    </div>
+    <button class="btn btn-outline" id="sampleBtn">⬇ サンプルCSVをダウンロード</button>
+  </div>
+</header>
+
+<!-- ── NAV ── -->
+<nav class="page-nav">
+  <div class="page-nav-inner">
+    <a href="/" class="nav-tab">📊 広告パフォーマンス分析</a>
+    <a href="/casestudy" class="nav-tab active">📈 ケーススタディ 通年変化可視化</a>
+  </div>
+</nav>
+
+<!-- ── MAIN ── -->
+<main class="main">
+
+  <!-- ── UPLOAD ── -->
+  <section class="card upload-card">
+    <div class="section-head">
+      <span class="step-badge">Step 1</span>
+      <h2 class="section-title">対象データと比較データをアップロード</h2>
+      <p class="section-desc">
+        チャネル・訪問者数・訪問者数シェア・CV数・CVシェア・CVR・広告費・CPA を含む CSVを2つアップロードしてください。
+        数値はカンマ区切り・% 表記・円表記に対応しています。
+      </p>
+    </div>
+
+    <!-- TWO UPLOAD ZONES -->
+    <div class="upload-pair">
+
+      <!-- 対象データ -->
+      <div class="upload-slot" id="targetSlot">
+        <div class="slot-header">
+          <span class="slot-badge target-badge">対象データ</span>
+          <span class="slot-hint">分析したい期間・年度</span>
+        </div>
+        <div class="drop-zone dz-target" id="targetZone">
+          <input type="file" id="targetInput" accept=".csv" />
+          <div class="drop-icon">📂</div>
+          <p class="drop-title">ドラッグ＆ドロップ</p>
+          <p class="drop-hint">または <strong>クリックして選択</strong></p>
+        </div>
+        <div class="file-info cs-file-info hidden" id="targetInfo">
+          <span class="file-info-icon">✅</span>
+          <div class="file-info-body">
+            <div class="file-info-name" id="targetName">—</div>
+            <div class="file-info-meta" id="targetMeta">—</div>
+          </div>
+          <button class="file-clear" id="targetClear">✕</button>
+        </div>
+      </div>
+
+      <!-- VS -->
+      <div class="vs-col">
+        <div class="vs-badge">VS</div>
+      </div>
+
+      <!-- 比較データ -->
+      <div class="upload-slot" id="compareSlot">
+        <div class="slot-header">
+          <span class="slot-badge compare-badge">比較データ</span>
+          <span class="slot-hint">比較基準となる期間・年度</span>
+        </div>
+        <div class="drop-zone dz-compare" id="compareZone">
+          <input type="file" id="compareInput" accept=".csv" />
+          <div class="drop-icon">📂</div>
+          <p class="drop-title">ドラッグ＆ドロップ</p>
+          <p class="drop-hint">または <strong>クリックして選択</strong></p>
+        </div>
+        <div class="file-info cs-file-info hidden" id="compareInfo">
+          <span class="file-info-icon">✅</span>
+          <div class="file-info-body">
+            <div class="file-info-name" id="compareName">—</div>
+            <div class="file-info-meta" id="compareMeta">—</div>
+          </div>
+          <button class="file-clear" id="compareClear">✕</button>
+        </div>
+      </div>
+
+    </div><!-- /upload-pair -->
+
+    <!-- Error -->
+    <div class="alert alert-error" id="errorAlert">
+      <span>⚠</span><span id="errorText">—</span>
+    </div>
+
+    <!-- Analyze button -->
+    <div class="upload-actions">
+      <button class="btn btn-primary" id="analyzeBtn" disabled>
+        <span id="btnIcon">▶</span>
+        <span id="btnLabel">比較分析を開始</span>
+      </button>
+      <span class="upload-hint" id="uploadHint">2つのCSVをアップロードすると比較分析できます</span>
+    </div>
+  </section>
+
+  <!-- ── RESULTS ── -->
+  <section id="resultsSection" class="hidden">
+
+    <!-- Top bar -->
+    <div class="results-topbar">
+      <div>
+        <span class="step-badge">Results</span>
+        <h2 class="section-title" style="margin-top:6px;">年度比較分析結果</h2>
+      </div>
+      <div style="display:flex;align-items:center;gap:16px;">
+        <div class="legend-chips">
+          <span class="legend-chip target-chip">■ 対象データ</span>
+          <span class="legend-chip compare-chip">■ 比較データ</span>
+        </div>
+        <button class="btn btn-outline" id="exportBtn">⬇ Excelで出力</button>
+      </div>
+    </div>
+
+    <!-- SUMMARY TABLE -->
+    <div class="card cmp-summary-card">
+      <div class="cmp-summary-head">
+        <h3 class="table-title">全体サマリー比較</h3>
+        <p class="table-desc">対象データと比較データの主要指標の比較</p>
+      </div>
+      <div class="table-scroll">
+        <table class="cmp-summary-table">
+          <thead>
+            <tr>
+              <th class="col-metric">指標</th>
+              <th class="col-target">対象データ</th>
+              <th class="col-compare">比較データ</th>
+              <th class="col-delta">増減</th>
+              <th class="col-deltapct">変化率</th>
+            </tr>
+          </thead>
+          <tbody id="summaryTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- METRIC CHARTS: 6 slots (CPC/Imp/CPM/CPA/CTR/CVR) -->
+    <div class="chart-section-head" style="margin-top:8px;">
+      <h3 class="chart-section-title">年度ごとの指標比較グラフ</h3>
+      <p class="chart-section-desc">チャネル別の対象・比較データを並べて可視化します</p>
+    </div>
+    <div class="cs-charts-grid" id="metricsGrid"></div>
+
+    <!-- SUPPLEMENTARY CHARTS -->
+    <div class="chart-section-head" style="margin-top:8px;">
+      <h3 class="chart-section-title">補足指標</h3>
+      <p class="chart-section-desc">CSVから直接取得できる指標の比較</p>
+    </div>
+    <div class="cs-charts-grid" id="supplementGrid"></div>
+
+    <!-- CHANNEL DETAIL TABLE -->
+    <div class="card table-card" style="margin-top:8px;">
+      <div class="table-header">
+        <h3 class="table-title">チャネル別詳細比較</h3>
+        <p class="table-desc">各チャネルの指標を対象・比較で比較</p>
+      </div>
+      <div class="table-scroll">
+        <table id="channelTable">
+          <thead id="channelHead"></thead>
+          <tbody id="channelBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </section>
+</main>
+
+<div class="toast" id="toast"></div>
+<script src="/static/js/casestudy.js"></script>
+</body>
+</html>
