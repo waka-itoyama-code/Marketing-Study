@@ -1,0 +1,4 @@
+* text=auto eol=lf
+Procfile text eol=lf
+render.yaml text eol=lf
+runtime.txt text eol=lf
